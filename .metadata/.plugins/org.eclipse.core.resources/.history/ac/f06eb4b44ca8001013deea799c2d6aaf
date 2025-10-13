@@ -1,0 +1,304 @@
+/*
+ * fsm.c
+ *
+ *  Created on: Oct 13, 2025
+ *      Author: ADMIN
+ */
+#include "fsm.h"
+int horState = INIT;
+int verState = INIT;
+int editState = IDLE;
+
+int redCnt = 5, yellowCnt = 2, greenCnt = 3;
+int redTemp = 1, yellowTemp = 1, greenTemp = 1;
+int horCnt = 0, verCnt = 0;
+int scan = 0;
+int mode = 0;
+
+void isBt1(){
+	if(isPress(0)){
+		resetTimer();
+		horCnt = 0;
+		verCnt = 0;
+		scan = 0;
+		updateBuffer(0, 0);
+		setHor(IDLE);
+		setVer(IDLE);
+		editState = EDIT_RED;
+		mode = 1;
+		setTimer1(100);
+		setTimer3(100);
+	}
+}
+
+void horRun(){
+	switch(horState){
+	case INIT:
+		setTimer1(redCnt*1000);
+		setTimer2(1000);
+		setTimer3(100);
+		horCnt = redCnt;
+		horState = RED;
+		break;
+
+	case RED:{
+		setHor(RED);
+
+		if(flagTimer2){
+			horCnt--;
+			setTimer2(1000);
+		}
+
+		if(flagTimer1){
+			setTimer1(greenCnt*1000);
+			horCnt = greenCnt;
+			horState = GREEN;
+		}
+
+		if(flagTimer3){
+			updateBuffer(horCnt, verCnt);
+			update7SEG(scan);
+			scan = !scan;
+			setTimer3(250);
+		}
+
+		isBt1();
+		break;
+	}
+
+	case GREEN:{
+		setHor(GREEN);
+		if(flagTimer2){
+			horCnt--;
+			setTimer2(1000);
+		}
+
+		if(flagTimer1){
+			setTimer1(yellowCnt*1000);
+			horCnt = yellowCnt;
+			horState = YELLOW;
+		}
+
+		if(flagTimer3){
+			updateBuffer(horCnt, verCnt);
+			update7SEG(scan);
+			scan = !scan;
+			setTimer3(250);
+		}
+
+		isBt1();
+		break;
+	}
+
+	case YELLOW:{
+		setHor(YELLOW);
+		if(flagTimer2){
+			horCnt--;
+			setTimer2(1000);
+		}
+
+		if(flagTimer1){
+			setTimer1(redCnt*1000);
+			horCnt = redCnt;
+			horState = RED;
+		}
+
+		if(flagTimer3){
+			updateBuffer(horCnt, verCnt);
+			update7SEG(scan);
+			scan = !scan;
+			setTimer3(250);
+		}
+
+		isBt1();
+		break;
+	}
+
+	default: //nothing
+		break;
+	}
+}
+
+void verRun(){
+	switch(verState){
+	case INIT:
+		setTimer4(greenCnt*1000);
+		setTimer5(1000);
+		verCnt = greenCnt;
+		verState = GREEN;
+		break;
+
+	case GREEN:{
+		setVer(GREEN);
+		if(flagTimer5){
+			verCnt--;
+			setTimer5(1000);
+		}
+
+		if(flagTimer4){
+			setTimer4(yellowCnt*1000);
+			verCnt = yellowCnt;
+			verState = YELLOW;
+		}
+		break;
+	}
+
+	case YELLOW:{
+		setVer(YELLOW);
+		if(flagTimer5){
+			verCnt--;
+			setTimer5(1000);
+		}
+
+		if(flagTimer4){
+			setTimer4(redCnt*1000);
+			verCnt = redCnt;
+			verState = RED;
+		}
+		break;
+	}
+
+	case RED:{
+		setVer(RED);
+
+		if(flagTimer5){
+			verCnt--;
+			setTimer5(1000);
+		}
+
+		if(flagTimer4){
+			setTimer4(greenCnt*1000);
+			verCnt = greenCnt;
+			verState = GREEN;
+		}
+		break;
+	}
+
+	default: //nothing
+		break;
+	}
+}
+
+void editRun(){
+	switch(editState){
+	case EDIT_RED:{
+		updateBuffer(redTemp, mode);
+		if(isPress(0)){
+			redTemp = 1;
+			editState = EDIT_YELLOW;
+			setHor(IDLE);
+			setVer(IDLE);
+			setTimer1(100);
+			setTimer3(100);
+		}
+
+		if(isPress(1)){
+			redTemp = (redTemp >= 99) ? 1: redTemp + 1;
+			mode = 2;
+		}
+
+		if(isPress(2)){
+			redCnt = redTemp;
+			mode = 3;
+		}
+
+		if(flagTimer1){
+			HAL_GPIO_TogglePin(R_H_GPIO_Port, R_H_Pin);
+			HAL_GPIO_TogglePin(R_V_GPIO_Port, R_V_Pin);
+			setTimer1(500);
+		}
+
+		if(flagTimer3){
+			update7SEG(scan);
+			scan = !scan;
+			setTimer3(250);
+		}
+		break;
+	}
+
+	case EDIT_YELLOW:{
+		updateBuffer(yellowTemp, mode);
+		if(isPress(0)){
+			redTemp = 1;
+			editState = EDIT_GREEN;
+			setHor(IDLE);
+			setVer(IDLE);
+			setTimer1(100);
+			setTimer3(100);
+		}
+
+		if(isPress(1)){
+			yellowTemp = (yellowTemp >= 99) ? 1: yellowTemp + 1;
+			mode = 2;
+		}
+
+		if(isPress(2)){
+			yellowCnt = yellowTemp;
+			mode = 3;
+		}
+
+		if(flagTimer1){
+			HAL_GPIO_TogglePin(Y_H_GPIO_Port, Y_H_Pin);
+			HAL_GPIO_TogglePin(Y_V_GPIO_Port, Y_V_Pin);
+			setTimer1(500);
+		}
+
+		if(flagTimer3){
+			update7SEG(scan);
+			scan = !scan;
+			setTimer3(250);
+		}
+		break;
+	}
+
+	case EDIT_GREEN:{
+		updateBuffer(greenTemp, mode);
+		if(isPress(0)){
+			if(yellowCnt > greenCnt) greenCnt = (greenCnt + yellowCnt > 99) ? (greenCnt + yellowCnt) : 99;
+			if(redCnt < greenCnt + yellowCnt) redCnt = (greenCnt + yellowCnt) ? (greenCnt + yellowCnt) : 99;
+			if(greenCnt >= redCnt - yellowCnt) greenCnt = redCnt - yellowCnt;
+			setHor(IDLE);
+			setVer(IDLE);
+			resetTimer();
+			editState = IDLE;
+			horState = INIT;
+			verState = INIT;
+			return;
+		}
+
+		if(isPress(1)){
+			greenTemp = (greenTemp >= 99) ? 1: greenTemp + 1;
+			mode = 2;
+		}
+
+		if(isPress(2)){
+			yellowCnt = yellowTemp;
+			mode = 3;
+		}
+
+		if(flagTimer1){
+			HAL_GPIO_TogglePin(G_H_GPIO_Port, G_H_Pin);
+			HAL_GPIO_TogglePin(G_V_GPIO_Port, G_V_Pin);
+			setTimer1(500);
+		}
+
+		if(flagTimer3){
+			update7SEG(scan);
+			scan = !scan;
+			setTimer3(250);
+		}
+		break;
+	}
+
+	default: //nothing
+		break;
+	}
+}
+
+void runAll(){
+	horRun();
+	verRun();
+	editRun();
+}
+
+

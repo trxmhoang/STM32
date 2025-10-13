@@ -1,0 +1,19 @@
+/*
+ * segment.h
+ *
+ *  Created on: Oct 13, 2025
+ *      Author: ADMIN
+ */
+
+#ifndef INC_SEGMENT_H_
+#define INC_SEGMENT_H_
+#include "fsm.h"
+
+extern int led_buffer[4];
+
+void set7Hor(int);
+void set7Ver(int);
+void update7SEG(int);
+void updateBuffer(int, int);
+
+#endif /* INC_SEGMENT_H_ */

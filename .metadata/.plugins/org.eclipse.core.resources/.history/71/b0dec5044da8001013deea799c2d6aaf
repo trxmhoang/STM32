@@ -1,0 +1,71 @@
+/*
+ * segment.c
+ *
+ *  Created on: Oct 13, 2025
+ *      Author: ADMIN
+ */
+#include "segment.h"
+int led_buffer[4] = {0};
+
+int arr[10][7] = {
+   //a, b, c, d, e, f, g
+	{0, 0, 0, 0, 0, 0, 1}, //0
+	{1, 0, 0, 1, 1, 1, 1}, //1
+	{0, 0, 1, 0, 0, 1, 0}, //2
+	{0, 0, 0, 0, 1, 1, 0}, //3
+	{1, 0, 0, 1, 1, 0, 0}, //4
+	{0, 1, 0, 0, 1, 0, 0}, //5
+	{0, 1, 0, 0, 0, 0, 0}, //6
+	{0, 0, 0, 1, 1, 1, 1}, //7
+	{0, 0, 0, 0, 0, 0, 0}, //8
+	{0, 0, 0, 0, 1, 0, 0}  //9
+};
+
+void set7Hor(int num){
+	if(num < 0 || num > 9) return;
+	for(int i = 0; i < 7; i++){
+		HAL_GPIO_WritePin(A_H_GPIO_Port, A_H_Pin << i, arr[num][i]);
+	}
+}
+
+void set7Ver(int num){
+	if(num < 0 || num > 9) return;
+	for(int i = 0; i < 7; i++){
+		HAL_GPIO_WritePin(A_V_GPIO_Port, A_V_Pin << i, arr[num][i]);
+	}
+}
+
+void update7SEG(int idx){
+	idx = idx % 2;
+
+	switch (idx){
+		case 0:
+			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, 0);
+			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, 1);
+			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, 0);
+			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, 1);
+			set7Hor(led_buffer[0]);
+			set7Ver(led_buffer[2]);
+			break;
+
+		case 1:
+			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, 1);
+			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, 0);
+			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, 1);
+			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, 0);
+			set7Hor(led_buffer[1]);
+			set7Ver(led_buffer[3]);
+			break;
+
+		default:
+			//do nothing
+			break;
+	}
+}
+
+void updateBuffer(int seg1, int seg2){
+	led_buffer[0] = seg1 / 10;
+	led_buffer[1] = seg1 % 10;
+	led_buffer[2] = seg2 / 10;
+	led_buffer[3] = seg2 % 10;
+}

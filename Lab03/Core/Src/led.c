@@ -1,0 +1,72 @@
+/*
+ * led.c
+ *
+ *  Created on: Oct 13, 2025
+ *      Author: ADMIN
+ */
+#include "led.h"
+int horLed = NONE, verLed = NONE;
+
+void setHor(int color){
+	switch(color){
+	case RED:
+		HAL_GPIO_WritePin(R_H_GPIO_Port, R_H_Pin, ON);
+		HAL_GPIO_WritePin(Y_H_GPIO_Port, Y_H_Pin, OFF);
+		HAL_GPIO_WritePin(G_H_GPIO_Port, G_H_Pin, OFF);
+		horLed = RED;
+		break;
+
+	case YELLOW:
+		HAL_GPIO_WritePin(R_H_GPIO_Port, R_H_Pin, OFF);
+		HAL_GPIO_WritePin(Y_H_GPIO_Port, Y_H_Pin, ON);
+		HAL_GPIO_WritePin(G_H_GPIO_Port, G_H_Pin, OFF);
+		horLed = YELLOW;
+		break;
+
+	case GREEN:
+		HAL_GPIO_WritePin(R_H_GPIO_Port, R_H_Pin, OFF);
+		HAL_GPIO_WritePin(Y_H_GPIO_Port, Y_H_Pin, OFF);
+		HAL_GPIO_WritePin(G_H_GPIO_Port, G_H_Pin, ON);
+		horLed = GREEN;
+		break;
+
+	default:
+		HAL_GPIO_WritePin(R_H_GPIO_Port, R_H_Pin, OFF);
+		HAL_GPIO_WritePin(Y_H_GPIO_Port, Y_H_Pin, OFF);
+		HAL_GPIO_WritePin(G_H_GPIO_Port, G_H_Pin, OFF);
+		horLed = NONE;
+		break;
+	}
+}
+
+void setVer(int color){
+	switch(color){
+	case RED:
+		HAL_GPIO_WritePin(R_V_GPIO_Port, R_V_Pin, ON);
+		HAL_GPIO_WritePin(Y_V_GPIO_Port, Y_V_Pin, OFF);
+		HAL_GPIO_WritePin(G_V_GPIO_Port, G_V_Pin, OFF);
+		verLed = RED;
+		break;
+
+	case YELLOW:
+		HAL_GPIO_WritePin(R_V_GPIO_Port, R_V_Pin, OFF);
+		HAL_GPIO_WritePin(Y_V_GPIO_Port, Y_V_Pin, ON);
+		HAL_GPIO_WritePin(G_V_GPIO_Port, G_V_Pin, OFF);
+		verLed = YELLOW;
+		break;
+
+	case GREEN:
+			HAL_GPIO_WritePin(R_V_GPIO_Port, R_V_Pin, OFF);
+			HAL_GPIO_WritePin(Y_V_GPIO_Port, Y_V_Pin, OFF);
+			HAL_GPIO_WritePin(G_V_GPIO_Port, G_V_Pin, ON);
+			verLed = GREEN;
+			break;
+
+	default:
+		HAL_GPIO_WritePin(R_V_GPIO_Port, R_V_Pin, OFF);
+		HAL_GPIO_WritePin(Y_V_GPIO_Port, Y_V_Pin, OFF);
+		HAL_GPIO_WritePin(G_V_GPIO_Port, G_V_Pin, OFF);
+		verLed = NONE;
+		break;
+	}
+}

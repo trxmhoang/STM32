@@ -1,0 +1,40 @@
+/*
+ * fsm.h
+ *
+ *  Created on: Oct 13, 2025
+ *      Author: ADMIN
+ */
+
+#ifndef INC_FSM_H_
+#define INC_FSM_H_
+
+#include "button.h"
+#include "timer.h"
+#include "led.h"
+#include "segment.h"
+#include "main.h"
+
+typedef enum{
+	NONE = 0,
+	RED = 11,
+	YELLOW = 22,
+	GREEN = 33
+} ledColor;
+
+typedef enum{
+	EDIT_RED = 10,
+	EDIT_YELLOW = 20,
+	EDIT_GREEN = 30
+} editMode;
+
+#define IDLE -1
+#define INIT 1
+
+void isBt1();
+void horRun();
+void verRun();
+void editRun();
+void runAll();
+
+
+#endif /* INC_FSM_H_ */

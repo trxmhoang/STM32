@@ -1,0 +1,5 @@
+fsm.c:17:6:isBt1	8	static
+fsm.c:36:6:horRun	8	static
+fsm.c:124:6:verRun	8	static
+fsm.c:183:6:editRun	8	static
+fsm.c:290:6:runAll	8	static
