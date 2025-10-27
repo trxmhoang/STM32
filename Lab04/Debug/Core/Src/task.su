@@ -1,0 +1,9 @@
+task.c:9:6:blink_int	8	static
+task.c:12:6:blink_led	8	static
+task.c:16:6:oneshot_1	8	static
+task.c:20:6:oneshot_2	8	static
+task.c:24:6:task1	8	static
+task.c:27:6:task2	8	static
+task.c:32:6:task3	8	static
+task.c:35:6:task4	8	static
+task.c:39:6:task5	8	static
